@@ -9,7 +9,7 @@ export default function ProtectedRoute({ children }) {
   useEffect(() => {
     const verifyNetwork = async () => {
       try {
-        const res = await axios.get("https://tbido-flow-backend-dev.azurewebsites.net/check-network");
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/network/check-network`);
 
         if (res.data?.connected) {
           setAllowed(true); 

@@ -32,6 +32,7 @@ export default function Logout() {
 
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const resourceOptions = [
     "Computer",
@@ -50,6 +51,7 @@ export default function Logout() {
         ? [...prev.resources, value]
         : prev.resources.filter((item) => item !== value),
     }));
+    if (checked) setErrors((prev) => ({ ...prev, resources: undefined }));
   };
 
   // Generic input handler
@@ -59,16 +61,17 @@ export default function Logout() {
       ...prev,
       [name]: value,
     }));
+    // Clear the related error as soon as the user fixes it
+    const errorKey = name === "otherResource" ? "resources" : name;
+    if (errors[errorKey]) setErrors((prev) => ({ ...prev, [errorKey]: undefined }));
   };
 
   // Logout handler
-  const handleLogout = async () => {
-    const emailToUse = formData.email || prefilledEmail;
+  const handleLogout = async (e) => {
+    e?.preventDefault();
+    if (loading) return;
 
-    if (!emailToUse) {
-      toast.error("Email is required!");
-      return;
-    }
+    const emailToUse = (formData.email || prefilledEmail).trim();
 
     // Merge checkbox + custom resource
     const allResources = [...formData.resources];
@@ -76,8 +79,16 @@ export default function Logout() {
       allResources.push(formData.otherResource.trim());
     }
 
+    const next = {};
+    if (!emailToUse) next.email = "Email is required.";
     if (allResources.length === 0) {
-      toast.error("Please select or specify at least one resource used.");
+      next.resources = "Select at least one resource, or type it under Other Resource.";
+    }
+    if (!formData.feedback.trim()) next.feedback = "Feedback is required.";
+    setErrors(next);
+
+    if (Object.keys(next).length > 0) {
+      toast.warning("Please fill in all required fields.");
       return;
     }
 
@@ -87,7 +98,7 @@ export default function Logout() {
       const res = await axios.post(`${API_BASE}/auth/logout`, {
         email: emailToUse,
         resources: allResources.join(", "),
-        feedback: formData.feedback,
+        feedback: formData.feedback.trim(),
       });
 
       const { status, message } = res.data;
@@ -99,7 +110,7 @@ export default function Logout() {
       setIsModalOpen(true);
     } catch (err) {
       console.error("Logout failed:", err);
-      toast.error("Logout failed. Please try again.");
+      toast.error(err?.response?.data?.message || "Logout failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -118,16 +129,22 @@ export default function Logout() {
 
       {/* Top Content */}
       <div className="w-full max-w-[360px] flex flex-col items-center text-center">
-        <img src={puplogo} alt="TBIDO Logo" className="h-12 mb-4" />
+        <img src={puplogo} alt="Innovation Commercialization Office logo" className="h-12 mb-4" />
 
         <h1 className="text-lg font-extrabold bg-gradient-to-r from-[#6D0C22] to-[#0E386B] bg-clip-text text-transparent mb-1">
           Logout
         </h1>
 
         <p className="text-sm text-gray-600 mb-6">
-          View the current status and updates of <br /> your incubatee application.
+          Let us know what you used today <br /> before you check out.
         </p>
 
+        <form
+          id="checkout-form"
+          onSubmit={handleLogout}
+          noValidate
+          className="w-full flex flex-col items-center"
+        >
         {/* Email */}
         <TextField
           type="email"
@@ -138,13 +155,20 @@ export default function Logout() {
           disabled={!!prefilledEmail}
           size="small"
           fullWidth
+          required
+          error={!!errors.email}
+          helperText={errors.email}
           sx={{ mb: 2 }}
           className="max-w-[333px] font-[Montserrat]"
         />
 
         {/* Resources */}
-        <div className="w-full max-w-[333px] text-left text-sm font-semibold mb-1">
-          Resources Used:
+        <div
+          className={`w-full max-w-[333px] text-left text-sm font-semibold mb-1 ${
+            errors.resources ? "text-red-600" : ""
+          }`}
+        >
+          Resources Used: <span className="text-red-600">*</span>
         </div>
 
         <FormGroup className="w-full max-w-[333px]">
@@ -172,6 +196,8 @@ export default function Logout() {
           onChange={handleChange}
           size="small"
           fullWidth
+          error={!!errors.resources}
+          helperText={errors.resources}
           sx={{ mb: 2 }}
         />
 
@@ -184,12 +210,17 @@ export default function Logout() {
           multiline
           rows={3}
           fullWidth
+          required
+          error={!!errors.feedback}
+          helperText={errors.feedback}
           sx={{ mb: 2 }}
         />
+        </form>
 
         {/* Logout Button */}
         <button
-          onClick={handleLogout}
+          type="submit"
+          form="checkout-form"
           disabled={loading}
           className={`w-full max-w-[333px] py-3 text-sm font-semibold rounded-lg transition bg-gradient-to-r from-[#6D0C22] to-[#0E386B] text-white ${
             loading ? "opacity-50 cursor-not-allowed" : "hover:opacity-90"

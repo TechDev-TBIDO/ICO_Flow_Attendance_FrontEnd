@@ -27,6 +27,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sessionId, setSessionId] = useState("");
+  const [errors, setErrors] = useState({});
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -40,15 +41,28 @@ export default function Login() {
       ...formData,
       [name]: type === "checkbox" ? checked : value,
     });
+    // Clear a field's error as soon as the user fixes it
+    if (errors[name]) setErrors({ ...errors, [name]: undefined });
   };
 
-  const handleLogin = async () => {
-    if (!formData.email && !prefilledEmail) {
-      toast.warning("Email is required!");
-      return;
-    }
-    if (!formData.terms) {
-      toast.info("You must agree to the terms before logging in.");
+  const validate = () => {
+    const email = (formData.email || prefilledEmail).trim();
+    const next = {};
+    if (!email) next.email = "Email is required.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = "Enter a valid email address.";
+    if (!formData.name.trim()) next.name = "Full name is required.";
+    if (!formData.office.trim()) next.office = "This field is required.";
+    if (!formData.position.trim()) next.position = "Position is required.";
+    if (!formData.terms) next.terms = "Please agree to the terms to continue.";
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
+
+  const handleLogin = async (e) => {
+    e?.preventDefault();
+    if (loading) return;
+    if (!validate()) {
+      toast.warning("Please fill in all required fields.");
       return;
     }
 
@@ -56,10 +70,10 @@ export default function Login() {
 
     try {
       const res = await axios.post(`${API_BASE}/auth/login`, {
-        email: formData.email || prefilledEmail,
-        name: formData.name,
-        office: formData.office,
-        position: formData.position,
+        email: (formData.email || prefilledEmail).trim(),
+        name: formData.name.trim(),
+        office: formData.office.trim(),
+        position: formData.position.trim(),
         terms: formData.terms,
       });
 
@@ -101,19 +115,22 @@ export default function Login() {
       {/* Form Container */}
       <div className="w-full max-w-[360px] flex flex-col items-center text-center">
         {/* Logo */}
-        <img src={puplogo} alt="TBIDO Logo" className="h-15 mb-4" />
+        <img src={puplogo} alt="Innovation Commercialization Office logo" className="h-15 mb-4" />
 
         {/* Title */}
         <h1 className="text-lg font-extrabold bg-gradient-to-r from-[#6D0C22] to-[#0E386B] bg-clip-text text-transparent mb-1">
           Login
         </h1>
         <p className="text-sm text-gray-600 mb-6">
-          View the current status and updates of <br /> your incubatee
-          application.
+          Tell us a bit about yourself to check in <br /> to the ICO co-working space.
         </p>
 
         {/* Input Fields */}
         <Box
+          component="form"
+          id="checkin-form"
+          onSubmit={handleLogin}
+          noValidate
           sx={{
             display: "flex",
             flexDirection: "column",
@@ -132,6 +149,9 @@ export default function Login() {
             onChange={handleChange}
             size="small"
             fullWidth
+            required
+            error={!!errors.email}
+            helperText={errors.email}
             disabled={!!prefilledEmail}
           />
 
@@ -143,6 +163,9 @@ export default function Login() {
             onChange={handleChange}
             size="small"
             fullWidth
+            required
+            error={!!errors.name}
+            helperText={errors.name}
           />
 
           {/* Department */}
@@ -153,6 +176,9 @@ export default function Login() {
             onChange={handleChange}
             size="small"
             fullWidth
+            required
+            error={!!errors.office}
+            helperText={errors.office}
           />
 
           {/* Position */}
@@ -163,11 +189,14 @@ export default function Login() {
             onChange={handleChange}
             size="small"
             fullWidth
+            required
+            error={!!errors.position}
+            helperText={errors.position}
           />
         </Box>
 
         {/* Terms Checkbox */}
-        <label className="flex items-start text-left w-full max-w-[333px] text-xs text-gray-600 mb-5">
+        <label className={`flex items-start text-left w-full max-w-[333px] text-xs ${errors.terms ? "text-red-600" : "text-gray-600"} ${errors.terms ? "mb-1" : "mb-5"}`}>
           <input
             type="checkbox"
             name="terms"
@@ -188,13 +217,17 @@ export default function Login() {
             <a href="#" className="text-[#0E386B] font-semibold hover:underline">
               Terms of Use
             </a>
-            .
+            .<span className="text-red-600"> *</span>
           </span>
         </label>
+        {errors.terms && (
+          <p className="w-full max-w-[333px] text-left text-xs text-red-600 mb-4">{errors.terms}</p>
+        )}
 
         {/* Login Button */}
         <button
-          onClick={handleLogin}
+          type="submit"
+          form="checkin-form"
           disabled={loading}
           className={`w-full max-w-[333px] py-3 text-sm font-semibold rounded-lg transition bg-gradient-to-r from-[#6D0C22] to-[#0E386B] text-white ${
             loading ? "opacity-50 cursor-not-allowed" : "hover:opacity-90"

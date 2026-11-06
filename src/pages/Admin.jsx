@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
@@ -12,6 +12,7 @@ import "react-toastify/dist/ReactToastify.css";
 import puplogo from "../assets/images/LandingPage/puplogo.png";
 import cybernest from "../assets/images/LandingPage/cybernest.png";
 import flow from "../assets/images/LandingPage/flow.png";
+import { API_BASE, isAdminLoggedIn, setAdminToken } from "../lib/adminAuth";
 
 export default function Admin() {
   const [showPassword, setShowPassword] = useState(false);
@@ -23,14 +24,24 @@ export default function Admin() {
 
   const [loading, setLoading] = useState(false);
 
-  const API_BASE = import.meta.env.VITE_API_BASE_URL; // ✅ Use .env
+  // Already logged in -> straight to the panel; explain why we got bounced here
+  useEffect(() => {
+    if (isAdminLoggedIn()) {
+      window.location.replace("/panel");
+      return;
+    }
+    const reason = new URLSearchParams(window.location.search).get("reason");
+    if (reason === "expired") toast.info("Your session expired. Please log in again.");
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e?.preventDefault();
+    if (loading) return;
     if (!formData.username) return toast.warning("Username is required!");
     if (!formData.password) return toast.warning("Password is required!");
 
@@ -49,7 +60,7 @@ export default function Admin() {
         toast.success("Login successful!");
 
         // Save JWT Token
-        localStorage.setItem("admin_token", data.token);
+        setAdminToken(data.token);
 
         // Redirect to Admin Panel
         setTimeout(() => {
@@ -58,7 +69,7 @@ export default function Admin() {
       } else {
         toast.error(data.message || "Login failed.");
       }
-    } catch (err) {
+    } catch {
       toast.error("Server error. Please try again.");
     }
 
@@ -73,7 +84,7 @@ export default function Admin() {
       {/* Top Section */}
       <div className="w-full max-w-[360px] flex flex-col items-center text-center">
 
-        <img src={puplogo} alt="TBIDO Logo" className="h-14 mb-4" />
+        <img src={puplogo} alt="Innovation Commercialization Office logo" className="h-14 mb-4" />
 
         <h1 className="text-lg font-extrabold bg-gradient-to-r from-[#6D0C22] to-[#0E386B] bg-clip-text text-transparent mb-1">
           Admin Login
@@ -84,6 +95,9 @@ export default function Admin() {
         </p>
 
         <Box
+          component="form"
+          onSubmit={handleLogin}
+          noValidate
           sx={{
             display: "flex",
             flexDirection: "column",
@@ -100,6 +114,8 @@ export default function Admin() {
             onChange={handleChange}
             size="small"
             fullWidth
+            autoFocus
+            autoComplete="username"
           />
 
           <TextField
@@ -110,32 +126,37 @@ export default function Admin() {
             onChange={handleChange}
             size="small"
             fullWidth
+            autoComplete="current-password"
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={() => setShowPassword(!showPassword)}>
+                  <IconButton
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    edge="end"
+                  >
                     {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
               ),
             }}
           />
-        </Box>
 
-        <button
-          onClick={handleLogin}
-          disabled={loading}
-          className={`w-full max-w-[333px] py-3 text-sm font-semibold rounded-lg transition 
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-3 text-sm font-semibold rounded-lg transition 
             bg-gradient-to-r from-[#6D0C22] to-[#0E386B] text-white
             ${loading ? "opacity-50 cursor-not-allowed" : "hover:opacity-90"}`}
         >
-          {loading ? "Logging in..." : "Login"}
-        </button>
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </Box>
 
       </div>
 
       {/* Powered By */}
-      <div className="flex flex-col items-center mt-8 space-y=1">
+      <div className="flex flex-col items-center mt-8 space-y-1">
         <p className="text-[10px] text-gray-400">Powered By:</p>
         <div className="flex items-center space-x-2">
           <img src={cybernest} alt="Cybernest Solutions" className="h-12" />

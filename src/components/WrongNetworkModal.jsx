@@ -43,7 +43,7 @@ export default function WrongNetworkModal({ isOpen, onClose }) {
               </button>
 
               {/* Logo */}
-              <img src={puplogo} alt="TBIDO Logo" className="h-15 mx-auto mb-3" />
+              <img src={puplogo} alt="Innovation Commercialization Office logo" className="h-15 mx-auto mb-3" />
 
               {/* Title */}
                 <h2
@@ -52,7 +52,7 @@ export default function WrongNetworkModal({ isOpen, onClose }) {
                 </h2>
               <p className="text-sm text-gray-600 mb-4">
                 Make sure you are connected to the <br />
-                <span className="font-semibold text-[#0E386B]">TBIDO Wi-Fi
+                <span className="font-semibold text-[#0E386B]">ICO Wi-Fi
                 </span>{" "}
                 before logging in.
               </p>
@@ -61,7 +61,7 @@ export default function WrongNetworkModal({ isOpen, onClose }) {
               <img src={qrCode} alt="QR Code" className="w-60 mx-auto mb-3" />
               <p className="text-xs text-gray-500">
                 Scan this QR Code to connect to the <br />
-                "TBIDO Wi-Fi"
+                "ICO Wi-Fi"
               </p>
 
               {/* Powered By */}

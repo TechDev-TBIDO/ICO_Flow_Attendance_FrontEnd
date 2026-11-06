@@ -44,7 +44,7 @@ export default function ErrorModal({ isOpen, onClose }) {
                 </button>
 
                 {/* Logo */}
-                <img src={puplogo} alt="TBIDO Logo" className="h-12 mx-auto mb-3" />
+                <img src={puplogo} alt="Innovation Commercialization Office logo" className="h-12 mx-auto mb-3" />
 
                 {/* Gradient Text */}
                 <h2

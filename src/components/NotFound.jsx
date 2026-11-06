@@ -12,7 +12,7 @@ export default function NotFound() {
   return (
     <div className="min-h-screen font-[montserrat] flex flex-col items-center justify-center bg-white px-6 py-10 text-center font-[Montserrat]">
       {/* Logo */}
-      <img src={logo} alt="DOST PUP TBIDO" className="h-15 mb-4" />
+      <img src={logo} alt="Innovation Commercialization Office logo" className="h-15 mb-4" />
 
       {/* 404 Text */}
       <h1 className="text-8xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#6D0C22] to-[#0E386B] mb-1">

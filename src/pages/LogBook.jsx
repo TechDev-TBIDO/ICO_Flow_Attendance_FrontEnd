@@ -85,14 +85,14 @@ export default function LogBook() {
       {/* Top Content */}
       <div className="w-full max-w-[360px] flex flex-col items-center text-center">
         {/* Logo */}
-        <img src={puplogo} alt="TBIDO Logo" className="h-12 mb-4" />
+        <img src={puplogo} alt="Innovation Commercialization Office logo" className="h-12 mb-4" />
 
         {/* Title */}
         <h1 className="text-lg font-extrabold text-[#6D0C22] mb-1">
-          Login/Logout
+          Check In / Check Out
         </h1>
         <p className="text-sm text-gray-600 mb-6">
-          View the current status and updates of <br /> your incubatee application.
+          Enter your email to check in or check out <br /> of the ICO co-working space.
         </p>
 
         {/* Email */}

@@ -39,7 +39,7 @@ export default function SuccessModal({ isOpen, onClose, title, message }) {
           <Dialog.Panel className="bg-white rounded-2xl text-center shadow-2xl w-full max-w-xs overflow-hidden">
           {/* Logo */}
             <div className="pt-6">
-            <img src={logo} alt="TBIDO Logo" className="h-14 mx-auto mb-2" />
+            <img src={logo} alt="Innovation Commercialization Office logo" className="h-14 mx-auto mb-2" />
             </div>
             {/* Lottie Animation + Tick */}
             <div className="relative w-42 h-42 mx-auto mb-4">

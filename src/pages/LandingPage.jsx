@@ -109,27 +109,34 @@ export default function LandingPage() {
       <div className="w-full max-w-[360px] flex flex-col items-center text-center pt-6 sm:pt-10">
 
         {/* LOGO */}
-        <img src={puplogo} alt="TBIDO Logo" className="h-12 sm:h-14 mb-4" />
+        <img src={puplogo} alt="Innovation Commercialization Office logo" className="h-12 sm:h-14 mb-4" />
 
         {/* TITLE */}
         <h1 className="text-lg sm:text-lg font-extrabold text-gray-900 mb-1">
-          <span className="text-[#6D0C22]">Status</span>{" "}
-          <span className="text-[#0E386B]">Dashboard</span>
+          <span className="text-[#6D0C22]">Co-Working</span>{" "}
+          <span className="text-[#0E386B]">Space</span>
         </h1>
 
         <p className="text-[11px] sm:text-sm text-gray-600 leading-snug mb-5">
-          Easily track your access, attendance, and reservations as part of your incubatee journey.
+          Check in and out of the Innovation Commercialization Office co-working space, and catch the latest announcements.
         </p>
 
         {/* COWORKING BUTTON */}
         <button
           onClick={handleCoworking}
           disabled={loading}
-          className={`mb-2 cursor-pointer w-full max-w-[333px] rounded-4xl overflow-hidden shadow-md hover:shadow-lg active:scale-[0.98] transition border-2 ${
+          className={`relative mb-2 cursor-pointer w-full max-w-[333px] rounded-4xl overflow-hidden shadow-md hover:shadow-lg active:scale-[0.98] transition border-2 ${
             loading ? "opacity-50 cursor-not-allowed" : "border-transparent"
           }`}
         >
-          <img src={coWorking} alt="Access Co-Working Space" className="w-full rounded-2xl" />
+          <img src={coWorking} alt="" className="w-full rounded-2xl" />
+          {/* Subtitle is real text (not baked into the SVG) so it's easy to edit */}
+          <span className="absolute inset-x-0 top-[72%] px-6 text-center text-[10px] leading-[1.3] font-medium text-white">
+            Record your presence in the co-working space
+            <br />
+            with just a few clicks.
+          </span>
+          <span className="sr-only">Mark your attendance in the co-working space</span>
         </button>
 
         {/* ANNOUNCEMENTS WIDGET */}
@@ -185,8 +192,8 @@ export default function LandingPage() {
         <div className="flex flex-col items-center mt-6">
           <p className="text-[10px] text-gray-400">Powered By:</p>
           <div className="flex items-center space-x-3">
-            <img src={cybernest} className="h-11" />
-            <img src={flow} className="h-4" />
+            <img src={cybernest} alt="Cybernest Solutions" className="h-11" />
+            <img src={flow} alt="Flow" className="h-4" />
           </div>
         </div>
       </div>

@@ -1,1 +1,18 @@
 @import "tailwindcss";
+/* Only real form fields should ever show a text cursor (hides the stray caret
+   that appears on plain text/logos, e.g. with browser caret browsing on) */
+body {
+  caret-color: transparent;
+}
+input,
+textarea,
+select,
+[contenteditable="true"] {
+  caret-color: auto;
+}
+
+/* Logos and illustrations shouldn't be selectable or draggable */
+img {
+  user-select: none;
+  -webkit-user-drag: none;
+}
