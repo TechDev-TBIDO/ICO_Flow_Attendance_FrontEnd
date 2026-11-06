@@ -181,8 +181,12 @@ export default function AdminPanel() {
         body: { ...rangeBody, page, page_size: PAGE_SIZE, search: debouncedSearch }
       });
       if (data.status !== "success") throw new Error(data.message);
-      setLogs(data.logs || []);
-      setTotalMatching(data.total_matching || 0);
+      // Newest check-ins first (the API already sorts; this keeps it guaranteed)
+      const rows = [...(data.logs || [])].sort(
+        (a, b) => (parseUtc(b.timein) || 0) - (parseUtc(a.timein) || 0)
+      );
+      setLogs(rows);
+      setTotalMatching(data.total_matching ?? rows.length);
     } catch (err) {
       if (err.message !== "Session expired") toast.error("Failed to load attendance logs.");
     }

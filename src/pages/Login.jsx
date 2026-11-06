@@ -6,6 +6,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import SuccessModal from "../components/SucessModal";
+import TermsModal from "../components/TermsModal";
 import puplogo from "../assets/images/LandingPage/puplogo.png";
 import cybernest from "../assets/images/LandingPage/cybernest.png";
 import flow from "../assets/images/LandingPage/flow.png";
@@ -28,6 +29,13 @@ export default function Login() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sessionId, setSessionId] = useState("");
   const [errors, setErrors] = useState({});
+  const [showTerms, setShowTerms] = useState(false);
+
+  const agreeToTerms = () => {
+    setFormData((prev) => ({ ...prev, terms: true }));
+    setErrors((prev) => ({ ...prev, terms: undefined }));
+    setShowTerms(false);
+  };
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -205,18 +213,17 @@ export default function Login() {
             className="mr-2 mt-[2px]"
           />
           <span>
-            I have read and agreed to the{" "}
-            <a href="#" className="text-[#0E386B] font-semibold hover:underline">
-              Privacy Notice
-            </a>
-            ,{" "}
-            <a href="#" className="text-[#0E386B] font-semibold hover:underline">
+            I have read and agree to the{" "}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault(); // don't toggle the checkbox via the label
+                setShowTerms(true);
+              }}
+              className="text-[#0E386B] font-semibold underline-offset-2 hover:underline cursor-pointer"
+            >
               Terms and Conditions
-            </a>{" "}
-            and{" "}
-            <a href="#" className="text-[#0E386B] font-semibold hover:underline">
-              Terms of Use
-            </a>
+            </button>
             .<span className="text-red-600"> *</span>
           </span>
         </label>
@@ -245,6 +252,12 @@ export default function Login() {
           <img src={flow} alt="Flow" className="h-4" />
         </div>
       </div>
+
+      <TermsModal
+        isOpen={showTerms}
+        onClose={() => setShowTerms(false)}
+        onAgree={agreeToTerms}
+      />
 
       {/* Success Modal */}
       <SuccessModal
